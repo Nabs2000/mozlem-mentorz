@@ -7,15 +7,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import firebaseConfig from "../config/firebaseConfig";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
 import type { Route } from "./+types/root";
 import "./app.css";
+import { initializeApp } from "firebase/app";
+import firebaseConfig from "../config/firebaseConfig";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -49,10 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
   return <Outlet />;
 }
 
