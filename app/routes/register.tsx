@@ -22,6 +22,12 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [company, setCompany] = useState("");
+  const [selectedOption, setSelectedOption] = useState("Client"); // Initial selected value
+
+  const handleChange = (event: any) => {
+    setSelectedOption(event.target.value);
+  };
+
   const auth = getAuth();
   const db = getFirestore();
   const navigate = useNavigate();
@@ -32,7 +38,8 @@ export default function Register() {
     email: string,
     password: string,
     phoneNumber: string,
-    company: string
+    company: string,
+    userType: string
   ) {
     try {
       setIsLoading(true);
@@ -53,6 +60,7 @@ export default function Register() {
         company: company,
         createdAt: new Date(),
         workouts: [],
+        userType: selectedOption,
         // Add other relevant profile information
       });
 
@@ -78,7 +86,15 @@ export default function Register() {
       <Form
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         onSubmit={(e) =>
-          registerAndCreateProfile(firstName, lastName, email, password, phoneNumber, company)
+          registerAndCreateProfile(
+            firstName,
+            lastName,
+            email,
+            password,
+            phoneNumber,
+            company,
+            selectedOption
+          )
         }
       >
         <div className="mb-4">
@@ -136,6 +152,22 @@ export default function Register() {
           >
             Password
           </label>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
           <input
             className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             id="password"
@@ -163,6 +195,38 @@ export default function Register() {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="firstName"
+          >
+            Account Type
+          </label>
+          <label className="text-black">
+            <input
+              className="block text-black text-sm font-bold mb-2"
+              type="radio"
+              name="myRadioGroup"
+              value="Client"
+              id="Client"
+              checked={selectedOption === "Client"}
+              onChange={handleChange}
+            />
+            Client
+          </label>
+          <label className="text-black">
+            <input
+              className="block text-black text-sm font-bold mb-2"
+              type="radio"
+              name="myRadioGroup"
+              value="Professional"
+              id="Professional"
+              checked={selectedOption === "Professional"}
+              onChange={handleChange}
+            />
+            Professional
+          </label>
         </div>
         <div className="mb-6">
           <label
