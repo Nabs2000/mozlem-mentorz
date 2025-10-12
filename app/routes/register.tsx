@@ -39,14 +39,14 @@ export default function Register() {
     password: string,
     phoneNumber: string,
     company: string,
-    userType: string
+    selectedOption: string
   ) {
     try {
       setIsLoading(true);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const user = userCredential.user;
 
@@ -59,7 +59,6 @@ export default function Register() {
         phoneNumber: phoneNumber,
         company: company,
         createdAt: new Date(),
-        workouts: [],
         userType: selectedOption,
         // Add other relevant profile information
       });
@@ -93,7 +92,7 @@ export default function Register() {
             password,
             phoneNumber,
             company,
-            selectedOption
+            selectedOption,
           )
         }
       >
