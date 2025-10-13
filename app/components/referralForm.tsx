@@ -8,7 +8,7 @@ export default function ReferralForm(client: Client) {
   const [recipient, setRecipient] = useState("");
 
   const sendEmail = (title: string, message: string, recipient: string) => {
-    console.log("Sending email!");
+    console.log(`Sending email with ${title}, ${message}, ${recipient}`);
   };
 
   return (
