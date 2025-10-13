@@ -2,13 +2,21 @@ import { useState } from "react";
 import { Form } from "react-router";
 import type { Client } from "~/types/client.types";
 
-export default function ReferralForm(client: Client) {
+export default function ReferralForm({ client }: { client: Client }) {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [recipient, setRecipient] = useState("");
 
   const sendEmail = (title: string, message: string, recipient: string) => {
-    console.log(`Sending email with ${title}, ${message}, ${recipient}`);
+    try {
+      console.log(`Sending email with ${title}, ${message}, ${recipient}`);
+    } catch (error: any) {
+      console.log("Error!");
+    } finally {
+      setSubject("");
+      setMessage("");
+      setRecipient("");
+    }
   };
 
   return (
