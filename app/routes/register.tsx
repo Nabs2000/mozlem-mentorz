@@ -24,13 +24,11 @@ export default function Register() {
   const [company, setCompany] = useState("");
   const [selectedOption, setSelectedOption] = useState("Client"); // Initial selected value
 
+  const navigate = useNavigate();
+
   const handleChange = (event: any) => {
     setSelectedOption(event.target.value);
   };
-
-  const auth = getAuth();
-  const db = getFirestore();
-  const navigate = useNavigate();
   // Function to register a new user and create their profile in Firestore
   async function registerAndCreateProfile(
     firstName: string,
@@ -42,28 +40,38 @@ export default function Register() {
     selectedOption: string
   ) {
     try {
+      const auth = getAuth();
+      const db = getFirestore();
       setIsLoading(true);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
       const user = userCredential.user;
 
-      // Create a user profile document in Firestore using the user's UID
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-        company: company,
-        createdAt: new Date(),
-        userType: selectedOption,
-        // Add other relevant profile information
-      });
+      selectedOption === "Client"
+        ? // Create a user profile document in Firestore using the user's UID
+          await setDoc(doc(db, "clients", user.uid), {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber,
+            // Add other relevant profile information
+          })
+        : await setDoc(doc(db, "professionals", user.uid), {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber,
+            company: company,
+            referrals: [],
+            // Add other relevant profile information
+          });
 
-      console.log("User registered and profile created:", user.uid);
+      console.log(
+        `${selectedOption === "Client" ? "Client" : "Professional"} registered and profile created: ${user.uid}`
+      );
       navigate("/");
     } catch (error: any) {
       const errorCode = error.code;
@@ -92,7 +100,7 @@ export default function Register() {
             password,
             phoneNumber,
             company,
-            selectedOption,
+            selectedOption
           )
         }
       >

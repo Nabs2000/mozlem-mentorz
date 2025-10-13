@@ -1,6 +1,5 @@
 import type { Route } from "./+types/professionalPage";
 
-
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "New React Router App" },
@@ -9,5 +8,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function ProfessionalPage() {
-    return <div>Professional Page</div>;
+  return <div>Professional Page</div>;
 }
