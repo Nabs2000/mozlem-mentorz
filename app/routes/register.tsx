@@ -18,7 +18,6 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [company, setCompany] = useState("");
@@ -29,6 +28,12 @@ export default function Register() {
   const handleChange = (event: any) => {
     setSelectedOption(event.target.value);
   };
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const email = user?.email;
+  const db = getFirestore();
+  const navigate = useNavigate();
   // Function to register a new user and create their profile in Firestore
   async function registerAndCreateProfile(
     firstName: string,
@@ -43,36 +48,33 @@ export default function Register() {
       const auth = getAuth();
       const db = getFirestore();
       setIsLoading(true);
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      selectedOption === "Client"
-        ? // Create a user profile document in Firestore using the user's UID
-          await setDoc(doc(db, "clients", user.uid), {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            phoneNumber: phoneNumber,
-            // Add other relevant profile information
-          })
-        : await setDoc(doc(db, "professionals", user.uid), {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            phoneNumber: phoneNumber,
-            company: company,
-            referrals: [],
-            // Add other relevant profile information
-          });
-
-      console.log(
-        `${selectedOption === "Client" ? "Client" : "Professional"} registered and profile created: ${user.uid}`
-      );
-      navigate("/");
+      if (selectedOption === "Client") {
+        // Create a user profile document in Firestore using the user's UID
+        await setDoc(doc(db, "clients", user?.uid!), {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phoneNumber: phoneNumber,
+          company: company,
+          createdAt: new Date(),
+          userType: selectedOption,
+          // Add other relevant profile information
+        });
+      } else if (selectedOption === "Professional") {
+        // Create a user profile document in Firestore using the user's UID
+        await setDoc(doc(db, "professionals", user?.uid!), {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phoneNumber: phoneNumber,
+          company: company,
+          createdAt: new Date(),
+          userType: selectedOption,
+          // Add other relevant profile information
+        });
+      }
+      console.log("User registered and profile created:", user?.uid);
+      selectedOption === "Client" ? navigate(`/client/${user?.uid}`) : navigate(`/professional/${user?.uid}`);
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -96,7 +98,7 @@ export default function Register() {
           registerAndCreateProfile(
             firstName,
             lastName,
-            email,
+            email!,
             password,
             phoneNumber,
             company,
@@ -134,22 +136,6 @@ export default function Register() {
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="email"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="mb-6">
@@ -250,6 +236,7 @@ export default function Register() {
           </Link>
         </div>
       </Form>
+      {isLoading && <p>Loading...</p>}
     </div>
   );
 }
